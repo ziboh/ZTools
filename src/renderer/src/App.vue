@@ -584,6 +584,9 @@ onMounted(async () => {
     updateWindowHeight()
   })
 
+  // 通知主进程渲染进程已就绪
+  window.ztools.rendererReady()
+
   // 监听插件按 ESC 返回搜索页面事件
   console.log('监听返回搜索页面事件')
   window.ztools.onBackToSearch(() => {

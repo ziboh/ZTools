@@ -1,5 +1,5 @@
 import { platform } from '@electron-toolkit/utils'
-import { app, BrowserWindow, session, webContents } from 'electron'
+import { app, BrowserWindow, ipcMain, session, webContents } from 'electron'
 import log from 'electron-log'
 import path from 'path'
 import lmdbInstance from './core/lmdb/lmdbInstance'
@@ -180,19 +180,19 @@ app.whenReady().then(async () => {
     }
   }
 
-  // 检查静默启动设置，未开启时启动后自动显示搜索窗口
-  try {
-    const settingsDoc = lmdbInstance.get('ZTOOLS/settings-general')
-    const silentStart = settingsDoc?.data?.silentStart ?? true
-    if (!silentStart) {
-      setTimeout(() => {
+  // 注册 renderer-ready IPC 事件，用于静默启动控制
+  ipcMain.on('renderer-ready', () => {
+    try {
+      const settingsDoc = lmdbInstance.get('ZTOOLS/settings-general')
+      const silentStart = settingsDoc?.data?.silentStart ?? true
+      if (!silentStart) {
         windowManager.showWindow()
-        console.log('[Main] 静默启动已关闭，启动后自动显示搜索窗口')
-      }, 500)
+        console.log('[Main] 静默启动已关闭，渲染进程就绪后自动显示搜索窗口')
+      }
+    } catch {
+      console.log('[Main] 读取静默启动设置失败，按默认行为启动')
     }
-  } catch {
-    console.log('[Main] 读取静默启动设置失败，按默认行为启动')
-  }
+  })
   // 处理文件关联打开：macOS pending 文件 / Windows 命令行参数
   const zpxFromArgs =
     pendingZpxFile || process.argv.find((arg) => arg.endsWith('.zpx') && !arg.startsWith('-'))

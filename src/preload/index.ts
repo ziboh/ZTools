@@ -27,6 +27,7 @@ const api = {
   launchAsAdmin: (appPath: string, name?: string) =>
     ipcRenderer.invoke('launch-as-admin', appPath, name),
   hideWindow: () => ipcRenderer.send('hide-window'),
+  rendererReady: () => ipcRenderer.send('renderer-ready'),
   resizeWindow: (height: number) => ipcRenderer.send('resize-window', height),
   updateLaunchContext: (context: {
     searchQuery: string

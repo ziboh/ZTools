@@ -57,6 +57,7 @@ declare global {
       launchAsAdmin: (appPath: string, name?: string) => Promise<void>
       hideWindow: () => void
       resizeWindow: (height: number) => void
+      rendererReady: () => void
       updateLaunchContext: (context: {
         searchQuery: string
         pastedImage: string | null
